@@ -31,6 +31,7 @@ pair<ll,ll> dfs(int cur, int par){
 pair<ll,ll> solve(int cur){
   ll len = 0;
   ll len2 = 0;
+  ll cnt = 1;
   ll cnt3 = 0;
   ll cnt2 = 0;
   pair<ll,ll> res;
@@ -45,12 +46,21 @@ pair<ll,ll> solve(int cur){
       len2 = len;
       cnt2 = cnt3;
       len = res.first;
-      temp.push_back(res.second);
+      if (res.second>1){
+        cnt = res.second;
+        temp.push_back(res.second);
+      }else{
+        cnt = 1;
+        ones = 1;
+      }
       cnt3 = res.second;
     }else if (res.first==len){
       tops++;
-      cnt3 += res.second;
-      temp.push_back(res.second);
+      if (res.second>1){
+        cnt *= res.second;
+        cnt3 += res.second;
+        temp.push_back(res.second);
+      }else ones++;
     }else if (res.first > len2){
       len2 = res.first;
       cnt2 = res.second;
@@ -63,9 +73,13 @@ pair<ll,ll> solve(int cur){
     for (int j=i+1;j<temp.size();j++)
       ans += temp[i]*temp[j];
   if (tops>1){
-    return {len*2,ans};
+    if (cnt>1&&ones) return {len*2,ans+(cnt*ones)+(ones*(ones-1)/2)};
+    else if (cnt>1){
+      return {len*2,ans};
+    }
+    else return {len*2,(ones*(ones-1)/2)};
   }else{
-    return {len+len2,cnt3*cnt2};
+      return {len+len2,cnt*cnt2};
   }
 }
 
@@ -104,5 +118,21 @@ int main() {
   printf("%lld %lld",res.first+1,res.second);
 }
 
-//get centroid of tree, then dfs across all sides. Each dfs returns a pair of integers: the longest path in that subtree, and the number of that path
+/*
+9
+1 4
+2 4
+3 4
+4 5
+5 6
+6 8
+6 7
+6 9
 
+5 10
+10 11
+10 12
+10 13
+*/
+
+//get centroid of tree, then dfs across all sides. Each dfs returns a pair of integers: the longest path in that subtree, and the number of that path
