@@ -1,3 +1,6 @@
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize("unroll-loops")
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -8,11 +11,11 @@ int dp[2][MAXN];
 bool checked[2][MAXN];
 
 struct state{
-    int a,b,c,d,e,f;
+    int a,b,c,d;
 };
 
 int convert(state c){
-    return c.a+c.b*(1<<2)+c.c*(1<<4)+c.d*(1<<6)+c.e*(1<<8)+c.f*(1<<10);
+    return c.a+c.b*(1<<2)+c.c*(1<<4)+c.d*(1<<6);
 }
 
 int val(int a, int b, int c){
@@ -23,7 +26,7 @@ int val(int a, int b, int c){
     if (a!=b&&b!=c&&a!=c) return 3;
     return 2;
 }
-//MBF MFB
+
 int main(){
     int N, len, a, b, v;
     state cur, temp;
@@ -38,7 +41,7 @@ int main(){
     }
     memset(dp,-1,sizeof dp);
     queue<state> q;
-    q.push({0,0,0,0,0,0});
+    q.push({0,0,0,0});
     dp[0][0] = 0;
     for (int i=0;i<N;i++){
         len = q.size();
@@ -48,11 +51,10 @@ int main(){
             temp = cur;
             a = convert(cur);
             checked[i&1][a] = 0;
+            v = val(cur.a,cur.b,arr[i]);
             cur.a = cur.b;
-            cur.b = cur.c;
-            cur.c = arr[i];
+            cur.b = arr[i];
             b = convert(cur);
-            v = val(cur.a,cur.b,cur.c);
             if (v+dp[i&1][a]>dp[(i&1)^1][b]){
                 dp[(i&1)^1][b] = v+dp[i&1][a];
                 if (!checked[(i&1)^1][b]){
@@ -60,11 +62,10 @@ int main(){
                     q.push(cur);
                 }
             }
-            temp.d = temp.e;
-            temp.e = temp.f;
-            temp.f = arr[i];
+            v = val(temp.c,temp.d,arr[i]);
+            temp.c = temp.d;
+            temp.d = arr[i];
             b = convert(temp);
-            v = val(temp.d,temp.e,temp.f);
             if (v+dp[i&1][a]>dp[(i&1)^1][b]){
                 dp[(i&1)^1][b] = v+dp[i&1][a];
                 if (!checked[(i&1)^1][b]){
